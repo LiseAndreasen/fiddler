@@ -35,6 +35,9 @@ for($i=1;$i<=$dozo;$i++) {
 	}
 }
 
+// types of triangles
+$types = array();
+
 // functions
 
 function print_board() {
@@ -67,28 +70,43 @@ function print_triangles() {
 	print("There were $triangle_no triangles in all.\n");
 }
 
-function add_triangle($key1, $key2, $i3, $j3) {
-	global $holes, $triangles;
+function add_triangle($key1, $key2, $i3, $j3, $type) {
+	global $holes, $triangles, $types;
 	$hole3 = array($i3, $j3);
 	$key3 = array_search($hole3, $holes);
 	$triangle = array($key1, $key2, $key3);
 	sort($triangle);
 	$triangles[$triangle[0]][$triangle[1]][$triangle[2]] = 1;
+	
+	// multiply type by 100 to get distinct lengths of side
+	$type *= 100;
+	if(isset($types[$type])) {
+		$types[$type]++;
+	} else {
+		$types[$type] = 1;
+	}
 }
 
-function test_cases($a, $b, $key1, $i1, $j1, $key2, $i2, $j2) {
+function print_types() {
+	global $types;
+	foreach($types as $type => $no) {
+		printf("Side length: %.2f. Number: %2d.\n", $type / 100, $no);
+	}
+}
+
+function test_cases($a, $b, $key1, $i1, $j1, $key2, $i2, $j2, $hole_dist) {
 	global $board;
 	if($i1 + $b == $i2 && $j1 + 2 * $a + $b == $j2) {
 		$i3 = $i1 + $a + $b;
 		$j3 = $j1 + $a - $b;
 		if($board[$i3][$j3] == 1) {
-			add_triangle($key1, $key2, $i3, $j3);
+			add_triangle($key1, $key2, $i3, $j3, $hole_dist);
 		}
 		
 		$i3 = $i2 - $a - $b;
 		$j3 = $j2 - $a + $b;
 		if($board[$i3][$j3] == 1) {
-			add_triangle($key1, $key2, $i3, $j3);
+			add_triangle($key1, $key2, $i3, $j3, $hole_dist);
 		}
 	}
 	
@@ -96,22 +114,32 @@ function test_cases($a, $b, $key1, $i1, $j1, $key2, $i2, $j2) {
 		$i3 = $i1 + $a + $b;
 		$j3 = $j1 - $a + $b;
 		if($board[$i3][$j3] == 1) {
-			add_triangle($key1, $key2, $i3, $j3);
+			add_triangle($key1, $key2, $i3, $j3, $hole_dist);
 		}
 
-		$i3 = $i1 - $a - $b;
-		$j3 = $j1 + $a - $b;
+		$i3 = $i2 - $a - $b;
+		$j3 = $j2 + $a - $b;
 		if($board[$i3][$j3] == 1) {
-			add_triangle($key1, $key2, $i3, $j3);
+			add_triangle($key1, $key2, $i3, $j3, $hole_dist);
 		}
 	}
+}
+
+function dist($hole1, $hole2) {
+	$i1 = $hole1[0];
+	$j1 = $hole1[1];
+	$i2 = $hole2[0];
+	$j2 = $hole2[1];
+	$idiff = ($i2 - $i1) * 0.866;
+	$jdiff = ($j2 - $j1) * 0.5;
+	return sqrt($idiff * $idiff + $jdiff * $jdiff);
 }
 
 //////////////////////////////////////////////
 
 foreach($holes as $key1 => $hole1) {
 	foreach($holes as $key2 => $hole2) {
-		if($key2 <= $key1) {
+		if($key2 == $key1) {
 			// skip duplicates
 			continue;
 		}
@@ -119,6 +147,7 @@ foreach($holes as $key1 => $hole1) {
 		$j1 = $hole1[1];
 		$i2 = $hole2[0];
 		$j2 = $hole2[1];
+		$hole_dist = dist($hole1, $hole2);
 		
 		if($i1 == $i2) {
 			// a line in the triangle is parallel with the side of the board
@@ -129,14 +158,14 @@ foreach($holes as $key1 => $hole1) {
 			$i3 = $i1 - $jdist / 2;
 			$j3 = $j1 + $jdist / 2;
 			if($board[$i3][$j3] == 1) {
-				add_triangle($key1, $key2, $i3, $j3);
+				add_triangle($key1, $key2, $i3, $j3, $hole_dist);
 			}
 			
 			// check below
 			$i3 = $i1 + $jdist / 2;
 			$j3 = $j1 + $jdist / 2;
 			if($board[$i3][$j3] == 1) {
-				add_triangle($key1, $key2, $i3, $j3);
+				add_triangle($key1, $key2, $i3, $j3, $hole_dist);
 			}
 		} else {
 			if($j1 == $j2) {
@@ -148,14 +177,14 @@ foreach($holes as $key1 => $hole1) {
 				$i3 = $i1 + $idist / 2;
 				$j3 = $j1 - $idist * 1.5;
 				if($board[$i3][$j3] == 1) {
-					add_triangle($key1, $key2, $i3, $j3);
+					add_triangle($key1, $key2, $i3, $j3, $hole_dist);
 				}
 
 				// check right
 				$i3 = $i1 + $idist / 2;
 				$j3 = $j1 + $idist * 1.5;
 				if($board[$i3][$j3] == 1) {
-					add_triangle($key1, $key2, $i3, $j3);
+					add_triangle($key1, $key2, $i3, $j3, $hole_dist);
 				}
 			} else {
 				// now for the weird cases
@@ -168,15 +197,15 @@ foreach($holes as $key1 => $hole1) {
 				
 				$a = 2;
 				$b = 1;
-				test_cases($a, $b, $key1, $i1, $j1, $key2, $i2, $j2);
+				test_cases($a, $b, $key1, $i1, $j1, $key2, $i2, $j2, $hole_dist);
 
 				$a = 3;
 				$b = 1;
-				test_cases($a, $b, $key1, $i1, $j1, $key2, $i2, $j2);
+				test_cases($a, $b, $key1, $i1, $j1, $key2, $i2, $j2, $hole_dist);
 
 				$a = 4;
 				$b = 1;
-				test_cases($a, $b, $key1, $i1, $j1, $key2, $i2, $j2);
+				test_cases($a, $b, $key1, $i1, $j1, $key2, $i2, $j2, $hole_dist);
 				
 				// a = 5 is too far
 				// a = 3, b = 2, nothing new
@@ -187,5 +216,6 @@ foreach($holes as $key1 => $hole1) {
 }
 
 print_triangles();
+//print_types();
 
 ?>
