@@ -15,8 +15,8 @@ $no_of_loops = sizeof($loops);
 $runs = 1000000;
 
 $mulligans = array(
-	00 => array("mull", "mull", "mull", "mull"),
-	05 => array("mull", "mull", "mull", "mull"),
+	00 => array("keep", "keep", "keep", "keep"),
+	05 => array("keep", "keep", "keep", "keep"),
 	10 => array("mull", "mull", "mull", "keep"),
 	15 => array("mull", "mull", "mull", "keep"),
 	20 => array("mull", "mull", "mull", "keep"),
@@ -25,7 +25,7 @@ $mulligans = array(
 	35 => array("mull", "keep", "keep", "mull"),
 	45 => array("keep", "keep", "mull", "mull"),
 	55 => array("keep", "mull", "mull", "keep"),
-	65 => array("mull", "mull", "keep", "keep")
+	65 => array("keep", "keep", "keep", "keep")
 );
 
 ///////////////////////////////////////////////////////////////////////////

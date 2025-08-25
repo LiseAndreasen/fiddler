@@ -21,21 +21,25 @@ function loop_on(& $averages, $that_time_left, $mulligan_left) {
 		return $averages[$that_time_left][$mulligan_left];
 	}
 	
+	if($mulligan_left > 0) {
+		$tmp_score_with_mulligan
+			= $averages[$that_time_left][$mulligan_left - 1];
+	}
 	// use recursion
 	for($i=0;$i<$no_of_loops;$i++) {
 		$this_loop_time = $loops[$i];
 		$this_time_left = $that_time_left - $this_loop_time;
-		// may use mulligan
-		if(isset($mulligans[$that_time_left][$this_loop_time])
-			&& strcmp($mulligans[$that_time_left][$this_loop_time], "mull") == 0
-			&& $mulligan_left == 1) {
-			$tmp_score = loop_on($averages, $that_time_left, 0);
+		if($this_time_left < 0) {
+			$tmp_score = 0;
 		} else {
-			if($this_time_left < 0) {
-				$tmp_score = 0;
-			} else {
-				$tmp_score = $this_loop_time
-					+ loop_on($averages, $this_time_left, $mulligan_left);
+			$tmp_score = $this_loop_time
+				+ loop_on($averages, $this_time_left, $mulligan_left);
+		}
+		if($mulligan_left > 0) {
+			// might mulligan be better?
+			if($tmp_score < $tmp_score_with_mulligan) {
+				$tmp_score = $tmp_score_with_mulligan;
+				$mulligans[$that_time_left][$this_loop_time] = "mull";
 			}
 		}
 		$loop_score[] = $tmp_score;
@@ -92,38 +96,22 @@ printf("Miles added to score on average: %.3f\n\n", $averages[$time_left][0] / 1
 
 print("Mulligan added.\n\n");
 
-// calculate the mulligan table
+// populate the mulligan table
 foreach($loops as $loop_time) {
 	foreach($averages as $avg_time_left => $average_arr) {
-		$average = $average_arr[0];
-		if($avg_time_left == $loop_time) {
-			$mulligans[$avg_time_left][$loop_time] = "keep";
-			continue;
-		}
-		if($avg_time_left < $loop_time) {
-			$mulligans[$avg_time_left][$loop_time] = "mull";
-			continue;
-		}
-		$new_time_left = $avg_time_left - $loop_time;
-		$avg_score_keep = $averages[$new_time_left][0] + $loop_time;
-		$avg_score_mull = $average;
-		if($avg_score_keep < $avg_score_mull) {
-			$mulligans[$avg_time_left][$loop_time] = "mull";
-		} else {
-			$mulligans[$avg_time_left][$loop_time] = "keep";
-		}
+		$mulligans[$avg_time_left][$loop_time] = "keep";
 	}
 }
-
-print("Mulligan table\n\n");
-print_2d($mulligans);
-print("\n");
 
 // calculate averages with the mulligan
 loop_on($averages, $time_left, 1);
 
 print("Averages\n\n");
 print_3d($averages);
+print("\n");
+
+print("Mulligan table\n\n");
+print_2d($mulligans);
 print("\n");
 
 printf("Miles added to score on average, with mulligan: %.3f\n\n", $averages[$time_left][1] / 10);
