@@ -19,8 +19,6 @@ function permute($letters, $used, $factor) {
 	global $valid_permutations;
 	if(array_sum($letters) == 0) {
 		// all letters have been used
-//		print("Count this $factor times.  ");
-//		print_permutation($used);
 		$valid_permutations += $factor;
 		return;
 	}
