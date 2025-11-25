@@ -14,8 +14,7 @@ $loops = 1000000;
 // part 1: 5 persons
 // part 2: N persons
 
-printf("All loops       %20d\n\n",
-	$loops);
+printf("All loops       %20d\n\n", $loops);
 
 for($persons=5;$persons<=50;$persons+=5) {
 	$good_loops = 0;
@@ -33,7 +32,6 @@ for($persons=5;$persons<=50;$persons+=5) {
 		for($j=0;$j<$persons;$j++) {
 			$new_no = rand(0, $persons - 1 - $j);
 			if($hat[$new_no] == $j) {
-	//print(implode(" ", $drawn).  " !!! $hat[$new_no]\n");
 				continue 2;
 			}
 			$drawn[$j] = $hat[$new_no];
@@ -41,8 +39,6 @@ for($persons=5;$persons<=50;$persons+=5) {
 			sort($hat);
 		}
 		
-	//print(implode(" ", $drawn). "\n");
-
 		// the draw was succesful
 		$good_loops++;
 		
@@ -54,7 +50,6 @@ for($persons=5;$persons<=50;$persons+=5) {
 		for($j=0;$j<$persons;$j++) {
 			$next_person = $drawn[$next_person];
 			if($next_person == 0 && $j < $persons - 1) {
-	//print("Oops\n");
 				$good = 0;
 				break;
 			}
