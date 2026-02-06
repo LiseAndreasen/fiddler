@@ -4,7 +4,7 @@
 // constants
 
 $loops1 = 100;
-$loops2 = 10000000; // 10000000 is nice and high 
+$loops2 = 10000000; // 10000000 is nice and high (10.000.000)
 $part = 2;
 if($loops2 <= 10) {
     $test = true;
@@ -50,12 +50,12 @@ for($i=0;$i<$loops1;$i++) {
     if($points[$winner] == 0) {
         // this is a new win
         $points[$winner] = 1;
-        $points[$loser] = 0;
     } else {
         // this makes a streak longer
         $points[$winner]++;
     }
-
+    $points[$loser] = 0;
+    
     $teams = rotate_teams($teams);
 }
 
@@ -72,11 +72,11 @@ for($i=0;$i<$loops2;$i++) {
     if($points[$winner] == 0) {
         // this is a new win
         $points[$winner] = 1;
-        $points[$loser] = 0;
     } else {
         // this makes a streak longer
         $points[$winner]++;
     }
+    $points[$loser] = 0;
     
     // register streak
     $streak = max($points);
