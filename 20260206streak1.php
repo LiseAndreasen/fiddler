@@ -100,8 +100,9 @@ foreach($streaks as $streak => $freq) {
 }
 $average /= $loops2;
 
-printf("Result, part %d: %.4f\n", $part, $average);
+ksort($streaks);
+print_r($streaks);
 
-// https://math.stackexchange.com/questions/1325254/what-does-sum-k-0-infty-frack2k-converge-to
+printf("Result, part %d: %.4f\n", $part, $average);
 
 ?>
