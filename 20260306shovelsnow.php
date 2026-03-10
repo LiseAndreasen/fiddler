@@ -37,8 +37,16 @@ for($i=0;$i<$loops;$i++) {
     $xm = ($x1 + $x2) / 2;
     $ym = ($y1 + $y2) / 2;
     
+    // slant of line through the 2 points
+    $a1 = ($y2 - $y1) / ($x2 - $x1);
+    
+    // translate midpoint
+    $xm2 = ($xm / $a1 + $ym) / ($a1 + 1 / $a1);
+    $ym2 = $a1 * $xm2;
+    
     // calculate the distance from center to midpoint
-    $dm = pow($xm * $xm + $ym * $ym, 0.5);
+    //    $dm = pow($xm * $xm + $ym * $ym, 0.5);
+    $dm = pow($xm2 * $xm2 + $ym2 * $ym2, 0.5);
     
     // calculate area of circle dm <= x <= 1
     // it would be the same as constucting the actual lines
