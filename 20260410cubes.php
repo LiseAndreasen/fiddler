@@ -6,6 +6,7 @@
 ///////////////////////////////////////////////////////////////////////////
 // functions
 
+// add all 3 digit numbers where the first digit is d1
 function add_number($d1, $d2, $d3, $d4) {
     global $all_three_digit_numbers;
     
@@ -98,8 +99,6 @@ foreach ($all_three_digit_numbers as $number) {
 }
 
 ksort($all_three_digit_numbers);
-
-print_r($all_three_digit_numbers);
 
 printf("Created %d numbers\n", sizeof($all_three_digit_numbers));
 
