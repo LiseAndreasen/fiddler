@@ -139,8 +139,6 @@ foreach ($all_the_buzzes as $key => $value) {
     }
 }
 
-//print_r($dip_below);
-
 printf("Extra credit: %d\n", $dip_below[10]);
 
 ?>
