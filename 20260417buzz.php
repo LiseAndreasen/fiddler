@@ -121,4 +121,26 @@ foreach ($all_the_N as $N_max) {
     }
 }
 
+// look for frequency never dips below x after this point
+// check at each i/20 value
+// false = there's been a dip
+$dip_below = array_fill(1, 20, 0);
+foreach ($all_the_buzzes as $key => $value) {
+    if($key == 0) {
+        continue;
+    }
+    
+    // worst possible point is just before a buzz
+    $dip_buzzes = $key;
+    $dip_value = $value - 1;
+    $dip_freq = 20 * $dip_buzzes / $dip_value;
+    for($i = ceil($dip_freq);$i<=20;$i++) {
+        $dip_below[$i] = $dip_value;
+    }
+}
+
+//print_r($dip_below);
+
+printf("Extra credit: %d\n", $dip_below[10]);
+
 ?>
