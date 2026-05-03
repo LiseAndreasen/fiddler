@@ -210,6 +210,45 @@ $n = 15;
 printf("\nLooking for loop around all cells on %dx%d board.\n", $n, $n);
 $result = knight_tour($n);
 print_map($result);
-//print_python($result);
+
+$n = 2;
+$keep_going = true;
+while($keep_going) {
+    // is nxn board connected?
+    $board2 = [];
+    $all_cells = [[0,0]];
+    $board2[0][0] = 0;
+    while(0 < sizeof($all_cells)) {
+        [$x, $y] = array_shift($all_cells);
+        foreach($legal_jumps as $jump) {
+            [$dx, $dy] = $jump;
+            $newx = $x + $dx;
+            $newy = $y + $dy;
+            if(0 <= $newx && $newx < $n && 0 <= $newy && $newy < $n) {
+                if(!isset($board2[$newx][$newy])) {
+                    $all_cells[] = [$newx, $newy];
+                    $board2[$newx][$newy] = $board2[$x][$y] + 1;
+                    $i++;
+                }
+            }
+        }
+    }
+    foreach($board2 as $x => $col) {
+        ksort($board2[$x]);
+    }
+    ksort($board2);
+    
+    $board2_flat = array_merge(...$board2);
+    $board2_size = sizeof($board2_flat);
+    
+    printf("Available cells on %d x %d board: %d\n", $n, $n, $board2_size);
+    if($board2_size < $n * $n) {
+        print("Not enough.\n");
+        $n++;
+    } else {
+        print_map($board2);
+        $keep_going = false;
+    }
+}
 
 ?>
