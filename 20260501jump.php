@@ -3,12 +3,124 @@
 ///////////////////////////////////////////////////////////////////////////
 // constants
 
+// fiddler
 // starting point is (0,0)
 // begin by looking at jumps to points with |x|, |y| <= max distance
 $max_distance = 8;
 
+// extra credit
+$legal_jumps = [
+    [ 1, 8], [ 1,-8], [-1, 8], [-1,-8],
+    [ 4, 7], [ 4,-7], [-4, 7], [-4,-7],
+    [ 7, 4], [ 7,-4], [-7, 4], [-7,-4],
+    [ 8, 1], [ 8,-1], [-8, 1], [-8,-1]
+];
+
+//$progress_max = 170;
+
 ///////////////////////////////////////////////////////////////////////////
 // functions
+
+// extra credit
+// https://www.geeksforgeeks.org/dsa/the-knights-tour-problem/
+
+// Count the number of onward moves from position (x, y)
+function count_options($board, $x, $y) {
+    global $legal_jumps;
+    
+    $count = 0;
+    $n = sizeof($board);
+    foreach($legal_jumps as $jump) {
+        [$dx, $dy] = $jump;
+        $nx = $x + $dx;
+        $ny = $y + $dy;
+        if(0 <= $nx && $nx < $n && 0 <= $ny && $ny < $n && $board[$nx][$ny] == -1) {
+            $count++;
+        }
+    }
+    return $count;
+}
+
+// Generate valid knight moves from (x, y), sorted by fewest onward moves
+function get_sorted_moves($board, $x, $y) {
+    global $legal_jumps;
+    
+    $move_list = [];
+    $n = sizeof($board);
+    foreach($legal_jumps as $i => $jump) {
+        [$dx, $dy] = $jump;
+        $nx = $x + $dx;
+        $ny = $y + $dy;
+        if(0 <= $nx && $nx < $n && 0 <= $ny && $ny < $n && $board[$nx][$ny] == -1) {
+            $options = count_options($board, $nx, $ny);
+            $move_list[] = [$options, $i];
+        }
+    }
+    sort($move_list);
+    return $move_list;
+}
+
+// Recursive function to solve the Knight's Tour
+function knight_tour_util($x, $y, $step, $n, &$board) {
+    global $legal_jumps;
+//    global $progress_bar, $progress_max;
+    
+    if($step == $n * $n) {
+        return true;
+    }
+    $moves = get_sorted_moves($board, $x, $y);
+    foreach($moves as $i => $move) {
+        $legal_jump_idx = $move[1];
+        [$dx, $dy] = $legal_jumps[$legal_jump_idx];
+        $nx = $x + $dx;
+        $ny = $y + $dy;
+        $board[$nx][$ny] = $step;
+        if(knight_tour_util($nx, $ny, $step + 1, $n, $board)) {
+            return true;
+        }
+        
+        // backtrack
+        $board[$nx][$ny] = -1;
+    }
+    return false;
+}
+
+// Function to start Knight's Tour
+function knight_tour($n) {
+    $board_column = array_fill(0, $n, -1);
+    $board = array_fill(0, $n, $board_column);
+    // assume tour possible beginning from (0,0)
+    $board[0][0] = 0;
+    if(knight_tour_util(0, 0, 1, $n, $board)) {
+        return $board;
+    }
+    return [[-1]];
+}
+
+function print_map($map) {
+    foreach($map[0] as $j => $cell) {
+        foreach($map as $i => $col) {
+            printf(" %3d", $map[$i][$j]);
+        }
+        echo "\n";
+    }
+    for($i=0;$i<sizeof($map);$i++) {
+        echo "====";
+    }
+    echo "\n";
+}
+
+function print_python($map) {
+    print("[\n");
+    foreach($map[0] as $j => $cell) {
+        print("[");
+        foreach($map as $i => $col) {
+            printf("%3d,", $map[$i][$j]);
+        }
+        echo "]\n";
+    }
+    echo "]\n";
+}
 
 ///////////////////////////////////////////////////////////////////////////
 // main program
@@ -90,5 +202,14 @@ foreach($jumps as $d => $jump_list) {
         }
     }
 }
+
+///////////////////////////////////////////////////////////////////////////
+// extra credit
+
+$n = 15;
+printf("\nLooking for loop around all cells on %dx%d board.\n", $n, $n);
+$result = knight_tour($n);
+print_map($result);
+//print_python($result);
 
 ?>
