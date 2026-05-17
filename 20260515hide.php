@@ -37,6 +37,21 @@ function pc_permute($items, $perms = array( )) {
     }
 }
 
+function add_os($perm, $walking) {
+    $perm_tmp = "O" . $perm;
+    $perm_tmp = str_replace("AB", "AOB", $perm_tmp);
+    $perm_tmp = str_replace("BA", "BOA", $perm_tmp);
+    $perm_tmp = str_replace("AC", "AOC", $perm_tmp);
+    $perm_tmp = str_replace("CA", "COA", $perm_tmp);
+    if($walking == "-") {
+        $perm_tmp = str_replace("AO", "A-O", $perm_tmp);
+        $perm_tmp = str_replace("BO", "B--O", $perm_tmp);
+        $perm_tmp = str_replace("OA", "O-A", $perm_tmp);
+        $perm_tmp = str_replace("OB", "O--B", $perm_tmp);
+    }
+    return $perm_tmp;
+}
+
 function print_perms($perms) {
     global $STRING, $LENGTH;
     
@@ -115,12 +130,7 @@ sort($perms1[$STRING]);
 
 // add O to all permutations
 foreach($perms1[$STRING] as $key => $perm) {
-    $perm_tmp = "O" . $perm;
-    $perm_tmp = str_replace("AB", "AOB", $perm_tmp);
-    $perm_tmp = str_replace("BA", "BOA", $perm_tmp);
-    $perm_tmp = str_replace("AC", "AOC", $perm_tmp);
-    $perm_tmp = str_replace("CA", "COA", $perm_tmp);
-    $perms1[$STRING][$key] = $perm_tmp;
+    $perms1[$STRING][$key] = add_os($perm, "");
 }
 
 // calculate max length of time
@@ -174,17 +184,19 @@ foreach($seekers as $key1 => $seeker) {
             }
         }
     }
-    $average_seek_time[$key1] = $time_sum / $no_of_hiders;
+    $average_seek_time[] = [$time_sum / $no_of_hiders, $key1];
     $no_not_found[$key1] = $not_found;
 }
 
-// find the seeker strategy with the lowest average
+sort($average_seek_time);
+
+// find the seeker strateges with the lowest averages
 $best_average_seek_time = min($average_seek_time);
-foreach($average_seek_time as $key => $time) {
-    if($time == $best_average_seek_time) {
-        printf("Winner: %s, time %.5f, %d cases out of %d of not being found\n",
-            implode("", $seekers[$key]), $average_seek_time[$key], $no_not_found[$key], $no_of_hiders);
-    }
+foreach($average_seek_time as $time_key) {
+    [$time, $key] = $time_key;
+    printf("%s, time %.5f, %d cases out of %d of not being found\n",
+        substr(add_os(implode("", $seekers[$key]), "-"), 0, $N + 1),
+        $time, $no_not_found[$key], $no_of_hiders);
 }
 
 ?>
