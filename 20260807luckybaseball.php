@@ -12,8 +12,39 @@ function random_0_1() {
     return (float)rand() / (float)getrandmax();
 }
 
+// https://codelucky.com/php-memoization/
+function memoizedFactorial($n, &$memo = []) {
+    if ($n == 0 || $n == 1) {
+        return 1;
+    }
+    if (!isset($memo[$n])) {
+        $memo[$n] = $n * memoizedFactorial($n - 1, $memo);
+    }
+    return $memo[$n];
+}
+
 ///////////////////////////////////////////////////////////////////////////
 // main program
+
+$no_of_games = 162;
+$E = 0;
+for($i=0;$i<=$no_of_games;$i++) {
+	// there will be i wins with probability
+	// c(162 i) / 2^162
+	// if i < 162/2, register 162 - i
+	$E +=
+		(
+			(
+				memoizedFactorial($no_of_games) /
+				(memoizedFactorial($i) * memoizedFactorial($no_of_games - $i))
+			)
+		/ pow(2, $no_of_games)
+		) * max($i, $no_of_games - $i);
+}
+
+printf("Result 1a: %.5f\n", $E);
+
+///////////////////////////////////////////////////////////////////////////
 
 $loops = 10000000;
 $no_of_games = 162;
@@ -33,7 +64,7 @@ for($i=0;$i<$loops;$i++) {
 	$winner_wins += max($no_of_wins, $no_of_games - $no_of_wins) - $no_of_games/2;
 }
 
-printf("\nResult 1: %.5f + %.1f = %.5f\n", $winner_wins / $loops,
+printf("\nResult 1b: %.5f + %.1f = %.5f\n", $winner_wins / $loops,
 	$no_of_games/2, $winner_wins / $loops + $no_of_games/2);
 // (5.069 - 5.071) + 81 = 86.069 - 86.071
 
