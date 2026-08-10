@@ -70,7 +70,7 @@ printf("\nResult 1b: %.5f + %.1f = %.5f\n", $winner_wins / $loops,
 
 ///////////////////////////////////////////////////////////////////////////
 
-$loops = 100000;
+$loops = 1000000;
 $no_of_separate_games = 5;
 $no_of_teams = 30;
 $no_of_games = $no_of_separate_games * ($no_of_teams - 1);
