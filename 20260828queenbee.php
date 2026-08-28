@@ -3,8 +3,8 @@
 ///////////////////////////////////////////////////////////////////////////
 // constants
 
-$queen_bee_min = 100000;
-$queen_bee_max = 1000000;
+$queen_bee_min = 10000;
+$queen_bee_max = 100000;
 
 ///////////////////////////////////////////////////////////////////////////
 // functions
@@ -28,10 +28,35 @@ for($queen_bee_value=$queen_bee_min;$queen_bee_value<$queen_bee_max;$queen_bee_v
     }
 }
 
-printf("\nResult 1: %.5f\n", $queen_bee_ambiguous / ($queen_bee_max - $queen_bee_min));
+printf("Result 1: %.5f\n", $queen_bee_ambiguous / ($queen_bee_max - $queen_bee_min));
 
 ///////////////////////////////////////////////////////////////////////////
 
+$cutoffs = [];
+
+// store cutoff values for each queen bee value
+for($queen_bee_value=$queen_bee_min-1;$queen_bee_value<=$queen_bee_max;$queen_bee_value++) {   
+    $amazing_cutoff = round($queen_bee_value * 0.50);
+    $great_cutoff = round($queen_bee_value * 0.40);
+    $nice_cutoff = round($queen_bee_value * 0.25);
+    $solid_cutoff = round($queen_bee_value * 0.15);
+    $good_cutoff = round($queen_bee_value * 0.08);
+    $moving_up_cutoff = round($queen_bee_value * 0.05);
+    $good_start_cutoff = round($queen_bee_value * 0.02);
+    $cutoffs[$queen_bee_value] = [$amazing_cutoff, $great_cutoff, $nice_cutoff, $solid_cutoff, $good_cutoff, $moving_up_cutoff, $good_start_cutoff];
+}
+
+$queen_bee_ambiguous = 0;
+
+for($queen_bee_value=$queen_bee_min;$queen_bee_value<$queen_bee_max;$queen_bee_value++) {
+    $lower = sizeof(array_diff_assoc($cutoffs[$queen_bee_value-1], $cutoffs[$queen_bee_value]));
+    $higher = sizeof(array_diff_assoc($cutoffs[$queen_bee_value], $cutoffs[$queen_bee_value+1]));
+    if(0 == $lower || 0 == $higher) {
+        $queen_bee_ambiguous++;
+    }
+}
+
+printf("Result 2: %.5f\n", $queen_bee_ambiguous / ($queen_bee_max - $queen_bee_min));
 
 
 ?>
