@@ -3,7 +3,8 @@
 ///////////////////////////////////////////////////////////////////////////
 // constants
 
-$loops = 100000000;
+$queen_bee_min = 100000;
+$queen_bee_max = 1000000;
 
 ///////////////////////////////////////////////////////////////////////////
 // functions
@@ -11,29 +12,26 @@ $loops = 100000000;
 ///////////////////////////////////////////////////////////////////////////
 // main program
 
-$queen_bee_ambigous = 0;
+$queen_bee_ambiguous = 0;
 
-for($i=0;$i<$loops;$i++) {
-    // progress
-    if($i * 100 % $loops == 0) {
-        print(".");
-    }
-    
-    $genius_cutoff = rand(10000, 100000);
-    
-    $queen_bee_estimate = $genius_cutoff / 0.7;
-    $queen_bee_higher = ceil($queen_bee_estimate);
-    $queen_bee_lower = floor($queen_bee_estimate);
-    
-    $genius_cutoff_higher = round($queen_bee_higher * 0.7);
+// test whether a value and a neighbor can produce the same cutoff
+for($queen_bee_value=$queen_bee_min;$queen_bee_value<$queen_bee_max;$queen_bee_value++) {
+    $queen_bee_lower = $queen_bee_value - 1;
+    $queen_bee_higher = $queen_bee_value + 1;
+
     $genius_cutoff_lower = round($queen_bee_lower * 0.7);
+    $genius_cutoff_this = round($queen_bee_value * 0.7);
+    $genius_cutoff_higher = round($queen_bee_higher * 0.7);
     
-    // we want 2 different queen bee values to produce different genius cutoffs
-    if($genius_cutoff_lower == $genius_cutoff_higher) {
-        $queen_bee_ambigous++;
+    if($genius_cutoff_lower == $genius_cutoff_this || $genius_cutoff_this == $genius_cutoff_higher) {
+        $queen_bee_ambiguous++;
     }
 }
 
-printf("\nResult 1: %.5f\n", $queen_bee_ambigous / $loops);
+printf("\nResult 1: %.5f\n", $queen_bee_ambiguous / ($queen_bee_max - $queen_bee_min));
+
+///////////////////////////////////////////////////////////////////////////
+
+
 
 ?>
