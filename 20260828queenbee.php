@@ -23,12 +23,14 @@ for($queen_bee_value=$queen_bee_min;$queen_bee_value<$queen_bee_max;$queen_bee_v
     $genius_cutoff_this = round($queen_bee_value * 0.7);
     $genius_cutoff_higher = round($queen_bee_higher * 0.7);
     
-    if($genius_cutoff_lower == $genius_cutoff_this || $genius_cutoff_this == $genius_cutoff_higher) {
+    if($genius_cutoff_lower == $genius_cutoff_this
+    || $genius_cutoff_this == $genius_cutoff_higher) {
         $queen_bee_ambiguous++;
     }
 }
 
-printf("Result 1: %.5f\n", $queen_bee_ambiguous / ($queen_bee_max - $queen_bee_min));
+printf("Result 1: %.5f\n", 1 - $queen_bee_ambiguous
+    / ($queen_bee_max - $queen_bee_min));
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -43,20 +45,24 @@ for($queen_bee_value=$queen_bee_min-1;$queen_bee_value<=$queen_bee_max;$queen_be
     $good_cutoff = round($queen_bee_value * 0.08);
     $moving_up_cutoff = round($queen_bee_value * 0.05);
     $good_start_cutoff = round($queen_bee_value * 0.02);
-    $cutoffs[$queen_bee_value] = [$amazing_cutoff, $great_cutoff, $nice_cutoff, $solid_cutoff, $good_cutoff, $moving_up_cutoff, $good_start_cutoff];
+    $cutoffs[$queen_bee_value] = [$amazing_cutoff, $great_cutoff,
+        $nice_cutoff, $solid_cutoff, $good_cutoff, $moving_up_cutoff, $good_start_cutoff];
 }
 
 $queen_bee_ambiguous = 0;
 
 for($queen_bee_value=$queen_bee_min;$queen_bee_value<$queen_bee_max;$queen_bee_value++) {
-    $lower = sizeof(array_diff_assoc($cutoffs[$queen_bee_value-1], $cutoffs[$queen_bee_value]));
-    $higher = sizeof(array_diff_assoc($cutoffs[$queen_bee_value], $cutoffs[$queen_bee_value+1]));
+    $lower = sizeof(array_diff_assoc($cutoffs[$queen_bee_value-1],
+        $cutoffs[$queen_bee_value]));
+    $higher = sizeof(array_diff_assoc($cutoffs[$queen_bee_value],
+        $cutoffs[$queen_bee_value+1]));
     if(0 == $lower || 0 == $higher) {
         $queen_bee_ambiguous++;
     }
 }
 
-printf("Result 2: %.5f\n", $queen_bee_ambiguous / ($queen_bee_max - $queen_bee_min));
+printf("Result 2: %.5f\n", 1 - $queen_bee_ambiguous
+    / ($queen_bee_max - $queen_bee_min));
 
 
 ?>
