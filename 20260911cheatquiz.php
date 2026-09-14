@@ -55,6 +55,7 @@ for($j=0;$j<sizeof($strategies_4);$j++) {
 		$points_sum += 1 + simulate_n_questions(4 - 1, $strategies_4[$j]);
 	}
 	$expected[$j] = $points_sum / $loops;
+	printf("Strategy %s / %s, gets %.5f points\n", $strategies_4[$j][0], $strategies_4[$j][1], $expected[$j]);
 }
 
 printf("Result 1: %.5f\n", max($expected));
