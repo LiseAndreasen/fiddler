@@ -35,7 +35,7 @@ function monte_carlo($loops) {
 	$all_orders_used_count = [];
 	$back_to_original_order_count = [];
 	
-	print("\n\t");		// progress
+	print("\nProgress: ");		// progress
 
 	for($l=0;$l<$loops;$l++) {
 		// progress
@@ -98,16 +98,16 @@ function variance($samples) {
 	$average = array_sum($samples) / sizeof($samples);
 	$variance = 0;
 	foreach($samples as $s) {
-		$variance += pow($average - $s, 2);
+		$variance += pow($average - $s, 2) / (sizeof($samples) - 1);
 	}
-	return $variance / (sizeof($samples) - 1);
+	return [$average, $variance];
 }
 
 ///////////////////////////////////////////////////////////////////////////
 // main program
 
-$deviation_target = 0.0000000001;
-$variance_target = pow($deviation_target, 0.5);
+$deviation_target = 0.001;		// ability to round to 2 decimals
+$variance_target = pow($deviation_target, 2);
 
 // init
 $loops = 100;
@@ -115,7 +115,7 @@ $var1 = 1;
 $var2 = 1;
 
 while($variance_target < $var1 || $variance_target < $var2) {
-	$loops *= 10;
+	$loops *= 3.17;			// sort of square root of 10
 	$res1_arr = [];
 	$res2_arr = [];
 	
@@ -127,14 +127,17 @@ while($variance_target < $var1 || $variance_target < $var2) {
 		$res2_arr[] = $res2;
 	}
 	
-	$var1 = variance($res1_arr);
-	$var2 = variance($res2_arr);
+	[$avg1, $var1] = variance($res1_arr);
+	[$avg2, $var2] = variance($res2_arr);
 	
-	printf("\nNumber of loops.........: %12d\n", $loops);
-	printf("Variances so far........: %12.7f\n", $var1);
-	printf("........................: %12.7f\n", $var2);
+	print("\n======================================\n");
+	printf("Number of loops.... 3 * : %12d\n", $loops);
+	printf("Target deviation........: %12.7f\n", $deviation_target);
+	printf("Deviations so far, res 1: %12.7f\n", pow($var1, 0.5));
+	printf("...................res 2: %12.7f\n", pow($var2, 0.5));
+	print("======================================\n");
 }
 
-printf("Final result 1..........:   %10.7f\n........................: - %10.7f\n", min($res1_arr), max($res1_arr));
-printf("Final result 2..........:   %10.7f\n........................: - %10.7f\n", min($res2_arr), max($res2_arr));
+printf("Final result 1..........:   %10.7f +/- %10.7f\n", $avg1, pow($var1, 0.5));
+printf("Final result 2..........:   %10.7f +/- %10.7f\n", $avg2, pow($var2, 0.5));
 ?>
