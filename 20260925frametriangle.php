@@ -7,7 +7,10 @@
 $super_loops = 5;
 
 // radius of circumscribed circle
-$d = 1.0 / pow(3, 0.5);  
+$d = 1.0 / pow(3, 0.5);
+
+// number of results we're looking for, related to monte carlo function
+$nor = 2;
 
 ///////////////////////////////////////////////////////////////////////////
 // functions
@@ -65,34 +68,45 @@ $variance_target = pow($deviation_target, 2);
 
 // init
 $loops = 100;
-$var1 = 1;
-$var2 = 1;
+for($i=1;$i<=$nor;$i++) {
+	$var[$i] = 1;
+}
 
-while($variance_target < $var1 || $variance_target < $var2) {
+while($variance_target < max($var)) {
 	$loops *= 3.17;			// sort of square root of 10
-	$res1_arr = [];
-	$res2_arr = [];
-	
-	for($i=0;$i<$super_loops;$i++) {
-		[$res1, $res2] = monte_carlo($loops);
-		printf("Result 1................: %12.7f\n", $res1);
-		printf("Result 2................: %12.7f\n", $res2);
-		$res1_arr[] = $res1;
-		$res2_arr[] = $res2;
+	for($i=1;$i<=$nor;$i++) {
+		$res_arr[$i] = [];
 	}
 	
-	[$avg1, $var1] = variance($res1_arr);
-	[$avg2, $var2] = variance($res2_arr);
-	
+	for($s=0;$s<$super_loops;$s++) {
+		$mc_res = monte_carlo($loops);
+		for($i=1;$i<=$nor;$i++) {
+			printf("Result %d................: %12.7f\n", $i,
+				$mc_res[$i-1]);
+			$res_arr[$i][] = $mc_res[$i-1];
+		}
+	}
+
+	for($i=1;$i<=$nor;$i++) {
+		$var_res = variance($res_arr[$i]);
+		$avg[$i] = $var_res[0];
+		$var[$i] = $var_res[1];
+	}
+		
 	print("======================================\n");
 	printf("Number of loops.... %d * : %12d\n", $super_loops, $loops);
 	printf("Target deviation........: %12.7f\n", $deviation_target);
-	printf("Deviations so far, res 1: %12.7f\n", pow($var1, 0.5));
-	printf("...................res 2: %12.7f\n", pow($var2, 0.5));
+	printf("Deviation so far........:\n");
+	for($i=1;$i<=$nor;$i++) {
+		printf("................result %d: %12.7f\n", $i,
+			pow($var[$i], 0.5));
+	}
 	print("======================================\n");
 }
 
-printf("Final result 1..........:   %10.7f +/- %10.7f\n", $avg1, pow($var1, 0.5));
-printf("Final result 2..........:   %10.7f +/- %10.7f\n", $avg2, pow($var2, 0.5));
+for($i=1;$i<=$nor;$i++) {
+	printf("Final result %d..........:   %10.7f\n", $i, $avg[$i]);
+	printf("                         +/- %8.7f\n", pow($var[$i], 0.5));
+}
 
 ?>
